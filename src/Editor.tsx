@@ -14,7 +14,7 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
         if (editorRef.current) {
             monaco.editor.setTheme(theme);
         }
-    }, [theme]);
+    }, [theme, editorRef]);
 
     const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setTheme(event.target.value);
@@ -37,7 +37,7 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
                 editorRef.current.dispose();
             }
         };
-    }, [editorRef]);
+    }, [editorRef, fontSize]);
 
     useEffect(() => {
         if (editorRef.current) {
@@ -45,13 +45,13 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
                 runQuery();
             });
         }
-    }, [editorRef.current, runQuery]);
+    }, [editorRef, runQuery]);
 
     useEffect(() => {
         if (editorRef.current) {
             editorRef.current.updateOptions({ fontSize: fontSize });
         }
-    }, [fontSize]);
+    }, [fontSize, editorRef]);
 
     const increaseFontSize = () => {
         setFontSize((prevSize) => prevSize + 1);
