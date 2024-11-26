@@ -7,7 +7,8 @@ interface EditorProps {
 }
 
 const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
-    const [fontSize, setFontSize] = useState(20);
+    const defaultFontSize = 20;
+    const [fontSize, setFontSize] = useState(defaultFontSize);
     const [theme, setTheme] = useState('vs-dark');
 
     useEffect(() => {
@@ -28,7 +29,7 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
                 language: 'sql',
                 theme: 'vs-dark',
                 automaticLayout: true,
-                fontSize: fontSize,
+                fontSize: defaultFontSize,
             });
         }
 
@@ -41,17 +42,17 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
 
     useEffect(() => {
         if (editorRef.current) {
+            editorRef.current.updateOptions({ fontSize: fontSize });
+        }
+    }, [fontSize, editorRef]);
+
+    useEffect(() => {
+        if (editorRef.current) {
             editorRef.current.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
                 runQuery();
             });
         }
-    }, [editorRef.current, runQuery]);
-
-    useEffect(() => {
-        if (editorRef.current) {
-            editorRef.current.updateOptions({ fontSize: fontSize });
-        }
-    }, [fontSize]);
+    }, [editorRef.current, runQuery, editorRef]);
 
     const increaseFontSize = () => {
         setFontSize((prevSize) => prevSize + 1);
