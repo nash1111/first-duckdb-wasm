@@ -8,6 +8,17 @@ interface EditorProps {
 
 const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
     const [fontSize, setFontSize] = useState(20);
+    const [theme, setTheme] = useState('vs-dark');
+
+    useEffect(() => {
+        if (editorRef.current) {
+            monaco.editor.setTheme(theme);
+        }
+    }, [theme]);
+
+    const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setTheme(event.target.value);
+    };
 
     useEffect(() => {
         const editorElement = document.getElementById('editor');
@@ -56,6 +67,12 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
                 <span>Font Size: {fontSize}</span>
                 <button onClick={increaseFontSize} style={{ marginLeft: '8px' }}>▲</button>
                 <button onClick={decreaseFontSize} style={{ marginLeft: '4px' }}>▼</button>
+                <select onChange={handleThemeChange} value={theme} style={{ marginLeft: '8px' }}>
+                    <option value="vs">vs</option>
+                    <option value="vs-dark">vs-dark</option>
+                    <option value="hc-black">hc-black</option>
+                    <option value="hc-light">hc-light</option>
+                </select>
             </div>
             <div
                 id="editor"
