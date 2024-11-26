@@ -14,7 +14,7 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
         if (editorRef.current) {
             monaco.editor.setTheme(theme);
         }
-    }, [theme]);
+    }, [theme, editorRef]);
 
     const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setTheme(event.target.value);
