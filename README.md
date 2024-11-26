@@ -11,3 +11,6 @@ gh repo clone nash1111/first-duckdb-wasm
 bun install
 bun run dev
 ```
+
+## CI
+![Lint Status](https://github.com/nash1111/first-duckdb-wasm/actions/workflows/lint.yml/badge.svg?branch=master)
