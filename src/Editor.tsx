@@ -52,7 +52,7 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
                 runQuery();
             });
         }
-    }, [editorRef.current, runQuery, editorRef]);
+    }, [runQuery, editorRef]);
 
     const increaseFontSize = () => {
         setFontSize((prevSize) => prevSize + 1);

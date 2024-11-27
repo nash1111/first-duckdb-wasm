@@ -1,21 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as duckdb from '@duckdb/duckdb-wasm';
 import Papa from 'papaparse';
-import Editor from './Editor';
 import * as monaco from 'monaco-editor';
-const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
-// TODO: add support for other types
-// https://duckdb.org/docs/sql/data_types/overview.html
-const DUCKDB_TYPES = ['INTEGER', 'DOUBLE', 'BOOLEAN', 'TEXT'];
+import InputSection from './components/InputSection';
+import OutputSection from './components/OutputSection';
 
-interface ColumnType {
-  name: string;
-  type: string;
-}
-interface Output {
+const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
+export interface Output {
   data?: Record<string, unknown>[];
   message?: string;
 }
+
 function App() {
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
@@ -73,6 +68,7 @@ function App() {
       },
     });
   };
+
   const inferColumnTypes = (data: Record<string, string | null>[]) => {
     return Object.keys(data[0] || {}).map((column) => {
       const values = data.map((row) => row[column]);
@@ -128,6 +124,7 @@ function App() {
       await conn.close();
     }
   };
+
   const runQuery = async () => {
     if (!db) {
       setOutput({ message: 'Database is not initialized.' });
@@ -157,180 +154,21 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100vh',
-        width: '100vw',
-      }}
-    >
-      {/* Input Section */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          borderRight: '1px solid #ddd',
-          padding: '10px',
-          height: '90%',
-        }}
-      >
-        <h2 style={{ margin: 0, paddingBottom: '10px' }}>Input</h2>
-        <div style={{ flex: 1, overflow: 'auto' }}>
-          <Editor editorRef={editorRef} runQuery={runQuery} />
-        </div>
-        <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-          <label>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-            <span
-              style={{
-                display: 'inline-block',
-                padding: '10px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                borderRadius: '5px',
-                cursor: 'pointer',
-              }}
-            >
-              Upload CSV
-            </span>
-          </label>
-          <button
-            onClick={runQuery}
-            style={{
-              padding: '10px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-            }}
-          >
-            Run Query (CTRL+ENTER)
-          </button>
-        </div>
-        {csvPreview && (
-          <div
-            style={{
-              flexGrow: 0,
-              overflowY: 'auto',
-              marginTop: '4px',
-              maxHeight: '24vh',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h3>Upload CSV Preview</h3>
-              <button
-                onClick={createTable}
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  backgroundColor: '#17a2b8',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                }}
-              >
-                Confirm table name, column types and Create Table
-              </button>
-            </div>
-            <input
-              type="text"
-              value={tableName}
-              onChange={(e) => setTableName(e.target.value)}
-              placeholder="Enter table name"
-              style={{ marginBottom: '8px', padding: '8px', width: '80%' }}
-            />
-            <table border={1} style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  {Object.keys(csvPreview[0] || {}).map((column, index) => (
-                    <th key={index}>
-                      {column}
-                      <select
-                        value={columnTypes[index]?.type || 'TEXT'}
-                        onChange={(e) => handleTypeChange(index, e.target.value)}
-                        style={{ marginLeft: '10px' }}
-                      >
-                        {DUCKDB_TYPES.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {csvPreview.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {Object.values(row).map((value, colIndex) => (
-                      <td key={colIndex}>{String(value)}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-          </div>
-        )}
-      </div>
-
-      {/* Output Section */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '10px',
-        }}
-      >
-        <h2 style={{ margin: 0, paddingBottom: '10px' }}>Output</h2>
-        {output?.data ? (
-          <table border={1} style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {Object.keys(output.data[0] || {}).map((key, index) => (
-                  <th key={index}>{key}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {output.data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {Object.values(row).map((value, colIndex) => (
-                    <td key={colIndex}>
-                      {typeof value === 'number' ? value : String(value)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <pre
-            style={{
-              flex: 1,
-              backgroundColor: '#f4f4f4',
-              padding: '10px',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              overflowY: 'scroll',
-            }}
-          >
-            {output?.message || 'No results to display.'}
-          </pre>
-        )}
-
-      </div>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      <InputSection
+        editorRef={editorRef}
+        runQuery={runQuery}
+        handleFileUpload={handleFileUpload}
+        csvPreview={csvPreview}
+        columnTypes={columnTypes}
+        handleTypeChange={handleTypeChange}
+        createTable={createTable}
+        tableName={tableName}
+        setTableName={setTableName}
+      />
+      <OutputSection output={output} />
     </div>
   );
 }
+
 export default App;
