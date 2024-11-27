@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as duckdb from '@duckdb/duckdb-wasm';
 import Papa from 'papaparse';
 import * as monaco from 'monaco-editor';
-import InputSection from './components/InputSection';
+import InputSection, { ColumnType } from './components/InputSection';
 import OutputSection from './components/OutputSection';
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
