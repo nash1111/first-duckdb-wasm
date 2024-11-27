@@ -1,6 +1,15 @@
 import React from "react";
 import Editor from "../Editor";
 import * as monaco from "monaco-editor";
+import { Button } from "./ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export interface ColumnType {
   name: string;
@@ -67,19 +76,7 @@ const InputSection: React.FC<InputSectionProps> = ({
             Upload CSV
           </span>
         </label>
-        <button
-          onClick={runQuery}
-          style={{
-            padding: "10px",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Run Query (CTRL+ENTER)
-        </button>
+        <Button onClick={runQuery}>Run Query (CTRL+ENTER)</Button>
       </div>
       {csvPreview && (
         <div
@@ -114,14 +111,11 @@ const InputSection: React.FC<InputSectionProps> = ({
             placeholder="Enter table name"
             style={{ marginBottom: "8px", padding: "8px", width: "80%" }}
           />
-          <table
-            border={1}
-            style={{ width: "100%", borderCollapse: "collapse" }}
-          >
-            <thead>
-              <tr>
+          <Table>
+            <TableHeader>
+              <TableRow>
                 {Object.keys(csvPreview[0] || {}).map((column, index) => (
-                  <th key={index}>
+                  <TableHead key={index}>
                     {column}
                     <select
                       value={columnTypes[index]?.type || "TEXT"}
@@ -134,20 +128,20 @@ const InputSection: React.FC<InputSectionProps> = ({
                         </option>
                       ))}
                     </select>
-                  </th>
+                  </TableHead>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {csvPreview.map((row, rowIndex) => (
-                <tr key={rowIndex}>
+                <TableRow key={rowIndex}>
                   {Object.values(row).map((value, colIndex) => (
-                    <td key={colIndex}>{String(value)}</td>
+                    <TableCell key={colIndex}>{String(value)}</TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>
