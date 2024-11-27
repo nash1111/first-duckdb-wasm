@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as duckdb from '@duckdb/duckdb-wasm';
-import Papa from 'papaparse';
-import * as monaco from 'monaco-editor';
-import InputSection, { ColumnType } from './components/InputSection';
-import OutputSection from './components/OutputSection';
+import React, { useEffect, useRef, useState } from "react";
+import * as duckdb from "@duckdb/duckdb-wasm";
+import Papa from "papaparse";
+import * as monaco from "monaco-editor";
+import InputSection, { ColumnType } from "./components/InputSection";
+import OutputSection from "./components/OutputSection";
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
@@ -14,10 +14,12 @@ export interface Output {
 function App() {
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
-  const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>([]);
+  const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>(
+    [],
+  );
   const [csvData, setCsvData] = useState<Record<string, string | null>[]>([]);
   const [columnTypes, setColumnTypes] = useState<ColumnType[]>([]);
-  const [tableName, setTableName] = useState<string>('');
+  const [tableName, setTableName] = useState<string>("");
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   useEffect(() => {
@@ -25,8 +27,8 @@ function App() {
       const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
       const worker_url = URL.createObjectURL(
         new Blob([`importScripts("${bundle.mainWorker}");`], {
-          type: 'text/javascript',
-        })
+          type: "text/javascript",
+        }),
       );
       const worker = new Worker(worker_url);
       const logger = new duckdb.ConsoleLogger();
@@ -40,13 +42,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('Output:', output);
+    console.log("Output:", output);
   }, [output]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
-      setOutput({ message: 'No file selected.' });
+      setOutput({ message: "No file selected." });
       return;
     }
 
@@ -57,13 +59,13 @@ function App() {
         const data = results.data as Record<string, string | null>[];
         setCsvData(data);
         setCsvPreview(data.slice(0, 5));
-        setTableName(file.name.replace('.csv', ''));
+        setTableName(file.name.replace(".csv", ""));
         const inferredTypes = inferColumnTypes(data);
         setColumnTypes(
           Object.keys(data[0] || {}).map((column, index) => ({
             name: column,
-            type: inferredTypes[index] || 'TEXT',
-          }))
+            type: inferredTypes[index] || "TEXT",
+          })),
         );
       },
     });
@@ -72,16 +74,16 @@ function App() {
   const inferColumnTypes = (data: Record<string, string | null>[]) => {
     return Object.keys(data[0] || {}).map((column) => {
       const values = data.map((row) => row[column]);
-      if (values.every((value) => /^\d+$/.test(value || ''))) {
-        return 'INTEGER';
+      if (values.every((value) => /^\d+$/.test(value || ""))) {
+        return "INTEGER";
       }
-      if (values.every((value) => /^\d+\.\d+$/.test(value || ''))) {
-        return 'DOUBLE';
+      if (values.every((value) => /^\d+\.\d+$/.test(value || ""))) {
+        return "DOUBLE";
       }
-      if (values.every((value) => value === 'true' || value === 'false')) {
-        return 'BOOLEAN';
+      if (values.every((value) => value === "true" || value === "false")) {
+        return "BOOLEAN";
       }
-      return 'TEXT';
+      return "TEXT";
     });
   };
 
@@ -93,7 +95,9 @@ function App() {
 
   const createTable = async () => {
     if (!db || !csvData || columnTypes.length === 0 || !tableName) {
-      setOutput({ message: 'Missing data, table name, or database is not initialized.' });
+      setOutput({
+        message: "Missing data, table name, or database is not initialized.",
+      });
       return;
     }
 
@@ -101,24 +105,29 @@ function App() {
     try {
       const columnsDef = columnTypes
         .map(({ name, type }) => `${name} ${type}`)
-        .join(', ');
+        .join(", ");
       const createTableQuery = `CREATE TABLE "${tableName}" (${columnsDef});`;
       await conn.query(createTableQuery);
 
-      const insertRows = csvData.map((row) =>
-        `(${Object.values(row)
-          .map((value) => (value === null ? 'NULL' : `'${String(value).replace("'", "''")}'`))
-          .join(', ')})`
+      const insertRows = csvData.map(
+        (row) =>
+          `(${Object.values(row)
+            .map((value) =>
+              value === null ? "NULL" : `'${String(value).replace("'", "''")}'`,
+            )
+            .join(", ")})`,
       );
-      const insertQuery = `INSERT INTO "${tableName}" VALUES ${insertRows.join(', ')};`;
+      const insertQuery = `INSERT INTO "${tableName}" VALUES ${insertRows.join(", ")};`;
       await conn.query(insertQuery);
 
-      setOutput({ message: `Table "${tableName}" created successfully with all rows.` });
+      setOutput({
+        message: `Table "${tableName}" created successfully with all rows.`,
+      });
     } catch (error: unknown) {
       if (error instanceof Error) {
         setOutput({ message: `Error: ${error.message}` });
       } else {
-        setOutput({ message: 'An unknown error occurred' });
+        setOutput({ message: "An unknown error occurred" });
       }
     } finally {
       await conn.close();
@@ -127,12 +136,12 @@ function App() {
 
   const runQuery = async () => {
     if (!db) {
-      setOutput({ message: 'Database is not initialized.' });
+      setOutput({ message: "Database is not initialized." });
       return;
     }
 
     if (!editorRef.current) {
-      setOutput({ message: 'Editor is not initialized.' });
+      setOutput({ message: "Editor is not initialized." });
       return;
     }
 
@@ -141,12 +150,16 @@ function App() {
     try {
       const result = await conn.query(query);
       const resultArray = result.toArray();
-      setOutput({ data: resultArray.length ? resultArray : [{ message: 'No data returned' }] });
+      setOutput({
+        data: resultArray.length
+          ? resultArray
+          : [{ message: "No data returned" }],
+      });
     } catch (error: unknown) {
       if (error instanceof Error) {
         setOutput({ message: `Error: ${error.message}` });
       } else {
-        setOutput({ message: 'An unknown error occurred' });
+        setOutput({ message: "An unknown error occurred" });
       }
     } finally {
       await conn.close();
@@ -154,7 +167,7 @@ function App() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
       <InputSection
         editorRef={editorRef}
         runQuery={runQuery}
