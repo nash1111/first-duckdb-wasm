@@ -2,6 +2,16 @@ import React from "react";
 
 import { Output } from "../App";
 
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 interface OutputSectionProps {
   output: Output | null;
 }
@@ -17,27 +27,28 @@ const OutputSection: React.FC<OutputSectionProps> = ({ output }) => {
       }}
     >
       <h2 style={{ margin: 0, paddingBottom: "10px" }}>Output</h2>
-      {output?.data ? (
-        <table border={1} style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              {Object.keys(output.data[0] || {}).map((key, index) => (
-                <th key={index}>{key}</th>
+      {output?.data && output.data.length > 0 ? (
+        <Table>
+          <TableCaption>Data Output</TableCaption>
+          <TableHeader>
+            <TableRow>
+              {Object.keys(output.data[0]).map((key, index) => (
+                <TableHead key={index}>{key}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {output.data.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+              <TableRow key={rowIndex}>
                 {Object.values(row).map((value, colIndex) => (
-                  <td key={colIndex}>
+                  <TableCell key={colIndex}>
                     {typeof value === "number" ? value : String(value)}
-                  </td>
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       ) : (
         <pre
           style={{
