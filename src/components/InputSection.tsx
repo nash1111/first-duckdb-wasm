@@ -1,7 +1,7 @@
 import React from "react";
 import Editor from "../Editor";
 import * as monaco from "monaco-editor";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "@/components/ui/table";
 
 export interface ColumnType {
   name: string;
