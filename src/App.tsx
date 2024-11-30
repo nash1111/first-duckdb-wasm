@@ -4,6 +4,9 @@ import Papa from "papaparse";
 import * as monaco from "monaco-editor";
 import InputSection, { ColumnType } from "./components/InputSection";
 import OutputSection from "./components/OutputSection";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "./components/ui/toast";
+import { Button } from "./components/ui/button";
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
@@ -12,6 +15,7 @@ export interface Output {
 }
 
 function App() {
+  const { toast } = useToast();
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
   const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>(
@@ -123,12 +127,20 @@ function App() {
       setOutput({
         message: `Table "${tableName}" created successfully with all rows.`,
       });
+
+      toast({
+        title: "Success",
+        description: `Table "${tableName}" created successfully.`,
+        action: <ToastAction altText="Dismiss">Close</ToastAction>,
+      });
+      console.log("Toast:", toast);
+
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        setOutput({ message: `Error: ${error.message}` });
-      } else {
-        setOutput({ message: "An unknown error occurred" });
-      }
+      console.log("Error:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred.",
+      });
     } finally {
       await conn.close();
     }
@@ -180,6 +192,20 @@ function App() {
         setTableName={setTableName}
       />
       <OutputSection output={output} />
+      <Button
+      variant="outline"
+      onClick={() => {
+        toast({
+          title: "Scheduled: Catch up ",
+          description: "Friday, February 10, 2023 at 5:57 PM",
+          action: (
+            <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+            ),
+          });
+        }}
+      >
+        Add to calendar
+      </Button>
     </div>
   );
 }
