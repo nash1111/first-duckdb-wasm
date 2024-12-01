@@ -4,7 +4,8 @@ import Papa from "papaparse";
 import * as monaco from "monaco-editor";
 import InputSection, { ColumnType } from "./components/InputSection";
 import OutputSection from "./components/OutputSection";
-
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "./components/ui/toast";
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
   data?: Record<string, unknown>[];
@@ -12,6 +13,7 @@ export interface Output {
 }
 
 function App() {
+  const { toast } = useToast();
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
   const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>(
@@ -123,12 +125,19 @@ function App() {
       setOutput({
         message: `Table "${tableName}" created successfully with all rows.`,
       });
+
+      toast({
+        title: "Success",
+        description: `Table "${tableName}" created successfully.`,
+        action: <ToastAction altText="Dismiss">Close</ToastAction>,
+      });
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        setOutput({ message: `Error: ${error.message}` });
-      } else {
-        setOutput({ message: "An unknown error occurred" });
-      }
+      console.log("Error:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred.",
+      });
     } finally {
       await conn.close();
     }
