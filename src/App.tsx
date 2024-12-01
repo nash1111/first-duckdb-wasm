@@ -131,7 +131,6 @@ function App() {
         description: `Table "${tableName}" created successfully.`,
         action: <ToastAction altText="Dismiss">Close</ToastAction>,
       });
-      setCsvPreview([]);
     } catch (error: unknown) {
       console.log("Error:", error);
       toast({
