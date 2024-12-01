@@ -8,7 +8,7 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
-export function Toaster() {
+export function LeftToaster() {
   const { toasts } = useToast();
 
   return (
@@ -27,6 +27,7 @@ export function Toaster() {
           </Toast>
         );
       })}
+      {/* toast bottom left corner */}
       <ToastViewport className="fixed bottom-0 left-0 m-4" />
     </ToastProvider>
   );
