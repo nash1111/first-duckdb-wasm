@@ -1,4 +1,4 @@
-import { useToast } from "@/hooks/use-toast";
+import { useLeftToast } from "@/hooks/use-left-toast";
 import {
   Toast,
   ToastClose,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/toast";
 
 export function LeftToaster() {
-  const { toasts } = useToast();
+  const { toasts } = useLeftToast();
 
   return (
     <ToastProvider>

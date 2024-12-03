@@ -147,3 +147,18 @@ button:focus-visible {
     --chart-5: 340 75% 55%;
   }
 }
+
+@keyframes slide-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-left {
+  animation: slide-left 0.5s forwards;
+}

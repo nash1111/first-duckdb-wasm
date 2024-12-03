@@ -4,7 +4,7 @@ import Papa from "papaparse";
 import * as monaco from "monaco-editor";
 import InputSection, { ColumnType } from "./components/InputSection";
 import OutputSection from "./components/OutputSection";
-import { useToast } from "@/hooks/use-toast";
+import { useLeftToast } from "@/hooks/use-left-toast";
 import { ToastAction } from "./components/ui/toast";
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
@@ -13,7 +13,7 @@ export interface Output {
 }
 
 function App() {
-  const { toast } = useToast();
+  const { leftToast } = useLeftToast();
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
   const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>(
@@ -126,14 +126,14 @@ function App() {
         message: `Table "${tableName}" created successfully with all rows.`,
       });
 
-      toast({
+      leftToast({
         title: "Success",
         description: `Table "${tableName}" created successfully.`,
         action: <ToastAction altText="Dismiss">Close</ToastAction>,
       });
     } catch (error: unknown) {
       console.log("Error:", error);
-      toast({
+      leftToast({
         title: "Error",
         description:
           error instanceof Error ? error.message : "An unknown error occurred.",
