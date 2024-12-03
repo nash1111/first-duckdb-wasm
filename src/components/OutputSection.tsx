@@ -1,4 +1,5 @@
 import React from "react";
+import { Bar, BarChart, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { Output } from "../App";
 import {
   Table,
@@ -9,34 +10,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Bar, BarChart } from "recharts";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#2563eb",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "#60a5fa",
-  },
-} satisfies ChartConfig;
 
 interface OutputSectionProps {
   output: Output | null;
 }
 
 const OutputSection: React.FC<OutputSectionProps> = ({ output }) => {
+
+  const chartData = output?.data
+    ? output.data.reduce((acc, curr) => {
+        const category = curr[Object.keys(curr)[0]];
+        const value = curr[Object.keys(curr)[1]];
+
+        if (!acc[category]) {
+          acc[category] = { total: 0, count: 0 };
+        }
+        acc[category].total += value;
+        acc[category].count += 1;
+        return acc;
+      }, {})
+    : {};
+
+  const formattedChartData = Object.entries(chartData).map(([category, { total, count }]) => ({
+    category,
+    average_value: total / count,
+  }));
+
   return (
     <div
       style={{
@@ -87,12 +86,13 @@ const OutputSection: React.FC<OutputSectionProps> = ({ output }) => {
         )}
       </div>
       <div style={{ flex: 0.2 }}>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <BarChart data={chartData}>
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-          </BarChart>
-        </ChartContainer>
+        <BarChart width={500} height={300} data={formattedChartData}>
+          <XAxis dataKey="category" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="average_value" fill="#8884d8" />
+        </BarChart>
       </div>
     </div>
   );
