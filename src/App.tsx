@@ -12,6 +12,24 @@ export interface Output {
   message?: string;
 }
 
+const VisualizeSection = () => {
+  return (
+    <div style={{ 
+      width: "100%",
+      height: "100%",
+      backgroundColor: "blue",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      color: "white",
+      fontSize: "24px",
+      fontWeight: "bold"
+    }}>
+      Visualize Here
+    </div>
+  );
+};
+
 function App() {
   const { toast } = useToast();
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
@@ -188,7 +206,14 @@ function App() {
         tableName={tableName}
         setTableName={setTableName}
       />
-      <OutputSection output={output} />
+         <div style={{ display: "flex", flexDirection: "column",flex: 1 }}>
+      <div style={{ flex: 0.7 }}>
+        <OutputSection output={output} />
+      </div>
+      <div style={{ flex: 0.3 }}>
+        <VisualizeSection />
+      </div>
+    </div>
     </div>
   );
 }
