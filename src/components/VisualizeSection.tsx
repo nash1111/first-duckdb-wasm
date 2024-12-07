@@ -54,7 +54,7 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
   });
 
   return (
-    <Card style={{ width: "100%", height: "100%" }}>
+    <Card style={{ width: "100%", height: "100%", overflow: "auto" }}>
       <CardHeader>
         <CardTitle>Bar Chart</CardTitle>
         <CardDescription>Visualization of Query Results</CardDescription>

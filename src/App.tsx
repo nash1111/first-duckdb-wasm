@@ -189,11 +189,19 @@ function App() {
         tableName={tableName}
         setTableName={setTableName}
       />
-      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-        <div style={{ flex: 0.7 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          height: "100%",
+          minHeight: 0,
+        }}
+      >
+        <div style={{ flex: "0 0 60%", minHeight: 0, overflow: "auto" }}>
           <OutputSection output={output} />
         </div>
-        <div style={{ flex: 0.3 }}>
+        <div style={{ flex: "0 0 40%", minHeight: 0, overflow: "auto" }}>
           <VisualizeSection output={output} />
         </div>
       </div>

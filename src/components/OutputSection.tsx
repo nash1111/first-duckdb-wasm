@@ -230,6 +230,7 @@ const OutputSection: React.FC<OutputSectionProps> = ({ output }) => {
         display: "flex",
         flexDirection: "column",
         padding: "10px",
+        overflow: "auto",
       }}
     >
       <h2 style={{ margin: 0, paddingBottom: "10px" }}>Output</h2>
