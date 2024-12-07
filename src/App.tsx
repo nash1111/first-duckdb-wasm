@@ -6,6 +6,7 @@ import InputSection, { ColumnType } from "./components/InputSection";
 import OutputSection from "./components/OutputSection";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
+import VisualizeSection from "./components/VisualizeSection";
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
   data?: Record<string, unknown>[];
@@ -188,7 +189,14 @@ function App() {
         tableName={tableName}
         setTableName={setTableName}
       />
-      <OutputSection output={output} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ flex: 0.7 }}>
+          <OutputSection output={output} />
+        </div>
+        <div style={{ flex: 0.3 }}>
+          <VisualizeSection output={output} />
+        </div>
+      </div>
     </div>
   );
 }

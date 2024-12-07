@@ -39,18 +39,25 @@ interface DataTableProps {
   data: OutputRow[];
 }
 
-function globalFilterFn(row: Row<OutputRow>, _columnId: string, filterValue: string) {
+function globalFilterFn(
+  row: Row<OutputRow>,
+  _columnId: string,
+  filterValue: string,
+) {
   const search = filterValue.toLowerCase();
   return Object.values(row.original).some((value) =>
-    String(value).toLowerCase().includes(search)
+    String(value).toLowerCase().includes(search),
   );
 }
 
 function DataTable({ columns, data }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
 
   const table = useReactTable<OutputRow>({
     data,
@@ -73,7 +80,10 @@ function DataTable({ columns, data }: DataTableProps) {
   });
 
   return (
-    <div className="w-full" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+    <div
+      className="w-full"
+      style={{ flex: 1, display: "flex", flexDirection: "column" }}
+    >
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter all columns..."
@@ -120,13 +130,18 @@ function DataTable({ columns, data }: DataTableProps) {
                           onClick={() =>
                             isSortable &&
                             header.column.toggleSorting(
-                              header.column.getIsSorted() === "asc"
+                              header.column.getIsSorted() === "asc",
                             )
                           }
                           className="px-0"
                         >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {isSortable && <ArrowUpDown className="ml-2 h-4 w-4" />}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {isSortable && (
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                          )}
                         </Button>
                       )}
                     </TableHead>
@@ -141,7 +156,10 @@ function DataTable({ columns, data }: DataTableProps) {
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
