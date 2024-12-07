@@ -189,14 +189,14 @@ function App() {
         tableName={tableName}
         setTableName={setTableName}
       />
-         <div style={{ display: "flex", flexDirection: "column",flex: 1 }}>
-      <div style={{ flex: 0.7 }}>
-        <OutputSection output={output} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ flex: 0.7 }}>
+          <OutputSection output={output} />
+        </div>
+        <div style={{ flex: 0.3 }}>
+          <VisualizeSection output={output} />
+        </div>
       </div>
-      <div style={{ flex: 0.3 }}>
-        <VisualizeSection output={output} />
-      </div>
-    </div>
     </div>
   );
 }

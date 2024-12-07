@@ -1,4 +1,4 @@
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -6,21 +6,27 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 import { Output } from "@/App";
 
-
 const VisualizeSection = ({ output }: { output: Output | null }) => {
-  const data = output?.data || []
+  const data = output?.data || [];
 
   if (!data.length) {
     return (
-      <Card style={{ width: "100%", height: "100%", backgroundColor: "green", color: "white" }}>
+      <Card
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 128, 0, 0.5)",
+          color: "white",
+        }}
+      >
         <CardHeader>
           <CardTitle>No Data</CardTitle>
           <CardDescription>Please run a query to see data</CardDescription>
@@ -31,20 +37,21 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const keys = Object.keys(data[0])
-  const xKey = keys[0] 
-  const yKeys = keys.slice(1)
+  const keys = Object.keys(data[0]);
+  const xKey = keys[0];
+  const yKeys = keys.slice(1);
 
-  const dynamicChartConfig: Record<string, { label: string; color: string }> = {}
+  const dynamicChartConfig: Record<string, { label: string; color: string }> =
+    {};
   yKeys.forEach((key, index) => {
     dynamicChartConfig[key] = {
       label: key,
-      color: `hsl(var(--chart-${index+1}))`,
-    }
-  })
+      color: `hsl(var(--chart-${index + 1}))`,
+    };
+  });
 
   return (
     <Card style={{ width: "100%", height: "100%" }}>
