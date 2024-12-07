@@ -68,6 +68,11 @@ function DataTable({ columns, data }: DataTableProps) {
       columnFilters,
       columnVisibility,
     },
+    initialState: {
+      pagination: {
+        pageSize: 8,
+      },
+    },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -177,8 +182,7 @@ function DataTable({ columns, data }: DataTableProps) {
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-sm text-muted-foreground flex-1">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          total rows {table.getFilteredRowModel().rows.length}
         </div>
         <Button
           variant="outline"

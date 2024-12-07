@@ -19,7 +19,7 @@ function App() {
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
   const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>(
-    []
+    [],
   );
   const [csvData, setCsvData] = useState<Record<string, string | null>[]>([]);
   const [columnTypes, setColumnTypes] = useState<ColumnType[]>([]);
@@ -32,7 +32,7 @@ function App() {
       const worker_url = URL.createObjectURL(
         new Blob([`importScripts("${bundle.mainWorker}");`], {
           type: "text/javascript",
-        })
+        }),
       );
       const worker = new Worker(worker_url);
       const logger = new duckdb.ConsoleLogger();
@@ -69,7 +69,7 @@ function App() {
           Object.keys(data[0] || {}).map((column, index) => ({
             name: column,
             type: inferredTypes[index] || "TEXT",
-          }))
+          })),
         );
       },
     });
@@ -117,12 +117,12 @@ function App() {
         (row) =>
           `(${Object.values(row)
             .map((value) =>
-              value === null ? "NULL" : `'${String(value).replace("'", "''")}'`
+              value === null ? "NULL" : `'${String(value).replace("'", "''")}'`,
             )
-            .join(", ")})`
+            .join(", ")})`,
       );
       const insertQuery = `INSERT INTO "${tableName}" VALUES ${insertRows.join(
-        ", "
+        ", ",
       )};`;
       await conn.query(insertQuery);
 
@@ -204,7 +204,7 @@ function App() {
       <div
         style={{
           display: "grid",
-          gridTemplateRows: "6fr 4fr",
+          gridTemplateRows: "7fr 8fr",
           overflow: "hidden",
         }}
       >
