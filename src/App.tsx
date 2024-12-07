@@ -6,29 +6,12 @@ import InputSection, { ColumnType } from "./components/InputSection";
 import OutputSection from "./components/OutputSection";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
+import VisualizeSection from "./components/VisualizeSection";
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
   data?: Record<string, unknown>[];
   message?: string;
 }
-
-const VisualizeSection = () => {
-  return (
-    <div style={{ 
-      width: "100%",
-      height: "100%",
-      backgroundColor: "blue",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      color: "white",
-      fontSize: "24px",
-      fontWeight: "bold"
-    }}>
-      Visualize Here
-    </div>
-  );
-};
 
 function App() {
   const { toast } = useToast();
@@ -211,7 +194,7 @@ function App() {
         <OutputSection output={output} />
       </div>
       <div style={{ flex: 0.3 }}>
-        <VisualizeSection />
+        <VisualizeSection output={output} />
       </div>
     </div>
     </div>
