@@ -7,6 +7,7 @@ import OutputSection from "./components/OutputSection";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
 import VisualizeSection from "./components/VisualizeSection";
+
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
   data?: Record<string, unknown>[];
@@ -18,7 +19,7 @@ function App() {
   const [db, setDb] = useState<duckdb.AsyncDuckDB | null>(null);
   const [output, setOutput] = useState<Output | null>(null);
   const [csvPreview, setCsvPreview] = useState<Record<string, string | null>[]>(
-    [],
+    []
   );
   const [csvData, setCsvData] = useState<Record<string, string | null>[]>([]);
   const [columnTypes, setColumnTypes] = useState<ColumnType[]>([]);
@@ -31,7 +32,7 @@ function App() {
       const worker_url = URL.createObjectURL(
         new Blob([`importScripts("${bundle.mainWorker}");`], {
           type: "text/javascript",
-        }),
+        })
       );
       const worker = new Worker(worker_url);
       const logger = new duckdb.ConsoleLogger();
@@ -68,7 +69,7 @@ function App() {
           Object.keys(data[0] || {}).map((column, index) => ({
             name: column,
             type: inferredTypes[index] || "TEXT",
-          })),
+          }))
         );
       },
     });
@@ -116,11 +117,13 @@ function App() {
         (row) =>
           `(${Object.values(row)
             .map((value) =>
-              value === null ? "NULL" : `'${String(value).replace("'", "''")}'`,
+              value === null ? "NULL" : `'${String(value).replace("'", "''")}'`
             )
-            .join(", ")})`,
+            .join(", ")})`
       );
-      const insertQuery = `INSERT INTO "${tableName}" VALUES ${insertRows.join(", ")};`;
+      const insertQuery = `INSERT INTO "${tableName}" VALUES ${insertRows.join(
+        ", "
+      )};`;
       await conn.query(insertQuery);
 
       setOutput({
@@ -177,31 +180,38 @@ function App() {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
-      <InputSection
-        editorRef={editorRef}
-        runQuery={runQuery}
-        handleFileUpload={handleFileUpload}
-        csvPreview={csvPreview}
-        columnTypes={columnTypes}
-        handleTypeChange={handleTypeChange}
-        createTable={createTable}
-        tableName={tableName}
-        setTableName={setTableName}
-      />
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "4fr 6fr",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <div style={{ overflow: "auto" }}>
+        <InputSection
+          editorRef={editorRef}
+          runQuery={runQuery}
+          handleFileUpload={handleFileUpload}
+          csvPreview={csvPreview}
+          columnTypes={columnTypes}
+          handleTypeChange={handleTypeChange}
+          createTable={createTable}
+          tableName={tableName}
+          setTableName={setTableName}
+        />
+      </div>
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-          height: "100%",
-          minHeight: 0,
+          display: "grid",
+          gridTemplateRows: "6fr 4fr",
+          overflow: "hidden",
         }}
       >
-        <div style={{ flex: "0 0 60%", minHeight: 0, overflow: "auto" }}>
+        <div style={{ overflow: "auto" }}>
           <OutputSection output={output} />
         </div>
-        <div style={{ flex: "0 0 40%", minHeight: 0, overflow: "auto" }}>
+        <div style={{ overflow: "auto" }}>
           <VisualizeSection output={output} />
         </div>
       </div>

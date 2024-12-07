@@ -1,4 +1,4 @@
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ResponsiveContainer, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -61,6 +61,7 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
       </CardHeader>
       <CardContent style={{ width: "100%", height: "80%" }}>
         <ChartContainer config={dynamicChartConfig}>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -82,7 +83,8 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
                 radius={4}
               />
             ))}
-          </BarChart>
+            </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
