@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ResponsiveContainer,
   Bar,
@@ -5,6 +6,8 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
+  AreaChart,
+  Area,
 } from "recharts";
 import {
   Card,
@@ -18,10 +21,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Output } from "@/App";
 
 const VisualizeSection = ({ output }: { output: Output | null }) => {
   const data = output?.data || [];
+  const [chartType, setChartType] = useState<"bar" | "area">("bar");
 
   if (!data.length) {
     return (
@@ -50,8 +55,8 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
   const xKey = keys[0];
   const yKeys = keys.slice(1);
 
-  const dynamicChartConfig: Record<string, { label: string; color: string }> =
-    {};
+  // TODO: modify color dynamically
+  const dynamicChartConfig: Record<string, { label: string; color: string }> = {};
   yKeys.forEach((key, index) => {
     dynamicChartConfig[key] = {
       label: key,
@@ -70,34 +75,72 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
       }}
     >
       <CardHeader style={{ flex: "0 0 auto" }}>
-        <CardTitle>Bar Chart</CardTitle>
-        <CardDescription>Visualization of Query Results</CardDescription>
+        <CardTitle>Chart Visualization</CardTitle>
+        <CardDescription>Choose your chart type</CardDescription>
+        {/* TDOO: refactor, split files */}
+        <Select value={chartType} onValueChange={(value) => setChartType(value as "bar" | "area")}>
+          <SelectTrigger className="w-[180px] mt-2">
+            <SelectValue placeholder="Select a chart type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bar">Bar Chart</SelectItem>
+            <SelectItem value="area">Area Chart</SelectItem>
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
         <ChartContainer config={dynamicChartConfig}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey={xKey}
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-              />
-              <YAxis />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="dashed" />}
-              />
-              {yKeys.map((key) => (
-                <Bar
-                  key={key}
-                  dataKey={key}
-                  fill={`var(--color-${key})`}
-                  radius={4}
+            {chartType === "bar" ? (
+              // BarChart
+              <BarChart data={data}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey={xKey}
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
                 />
-              ))}
-            </BarChart>
+                <YAxis />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                />
+                {yKeys.map((key) => (
+                  <Bar
+                    key={key}
+                    dataKey={key}
+                    fill={`var(--color-${key})`}
+                    radius={4}
+                  />
+                ))}
+              </BarChart>
+            ) : (
+              // AreaChart
+              <AreaChart data={data}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey={xKey}
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <YAxis />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                />
+                {yKeys.map((key) => (
+                  <Area
+                    key={key}
+                    type="monotone"
+                    dataKey={key}
+                    stroke="blue"
+                    fill="blue"
+                  />
+                ))}
+              </AreaChart>
+            )}
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
