@@ -11,7 +11,7 @@ This repository provides a simple analytical environment using [DuckDB-Wasm](htt
 
 ```
 gh repo clone nash1111/first-duckdb-wasm
-bun install
+bun install --save-text-lockfile
 bun run dev
 ```
 
