@@ -21,7 +21,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { Output } from "@/App";
 
 const VisualizeSection = ({ output }: { output: Output | null }) => {
@@ -56,7 +62,8 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
   const yKeys = keys.slice(1);
 
   // TODO: modify color dynamically
-  const dynamicChartConfig: Record<string, { label: string; color: string }> = {};
+  const dynamicChartConfig: Record<string, { label: string; color: string }> =
+    {};
   yKeys.forEach((key, index) => {
     dynamicChartConfig[key] = {
       label: key,
@@ -78,7 +85,10 @@ const VisualizeSection = ({ output }: { output: Output | null }) => {
         <CardTitle>Chart Visualization</CardTitle>
         <CardDescription>Choose your chart type</CardDescription>
         {/* TDOO: refactor, split files */}
-        <Select value={chartType} onValueChange={(value) => setChartType(value as "bar" | "area")}>
+        <Select
+          value={chartType}
+          onValueChange={(value) => setChartType(value as "bar" | "area")}
+        >
           <SelectTrigger className="w-[180px] mt-2">
             <SelectValue placeholder="Select a chart type" />
           </SelectTrigger>
