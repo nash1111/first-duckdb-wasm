@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "e2e-headed": "bunx playwright test --headed --project=chromium",
+    "e2e":"bunx playwright test"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.29.0",
@@ -30,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.19.0",
+    "@playwright/test": "^1.50.0",
     "@types/node": "^22.10.10",
     "@types/papaparse": "^5.3.15",
     "@types/react": "^19.0.8",
