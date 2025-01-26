@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Editor from "../Editor";
 import * as monaco from "monaco-editor";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,33 @@ const InputSection: React.FC<InputSectionProps> = ({
   tableName,
   setTableName,
 }) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type === "text/csv") {
+      const event = {
+        target: {
+          files: files,
+        },
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleFileUpload(event);
+    }
+  };
+
   return (
     <div
       style={{
@@ -49,8 +76,43 @@ const InputSection: React.FC<InputSectionProps> = ({
         borderRight: "1px solid #ddd",
         padding: "10px",
         height: "90%",
+        position: "relative",
+        backgroundColor: isDragging ? "rgba(0, 123, 255, 0.1)" : "transparent",
+        transition: "background-color 0.3s ease",
       }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
+      {isDragging && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 123, 255, 0.1)",
+            border: "2px dashed #007bff",
+            zIndex: 1000,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              padding: "20px",
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            Drop CSV file here
+          </div>
+        </div>
+      )}
       <h2 style={{ margin: 0, paddingBottom: "10px" }}>Input</h2>
       <div style={{ flex: 1, overflow: "auto" }}>
         <Editor editorRef={editorRef} runQuery={runQuery} />
@@ -73,7 +135,7 @@ const InputSection: React.FC<InputSectionProps> = ({
               cursor: "pointer",
             }}
           >
-            Upload CSV
+            Upload CSV(Choose file or Drag and Drop)
           </span>
         </label>
         <Button onClick={runQuery}>Run Query (CTRL+ENTER)</Button>
