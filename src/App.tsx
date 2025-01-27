@@ -1,4 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import * as duckdb from "@duckdb/duckdb-wasm";
 import Papa from "papaparse";
 import * as monaco from "monaco-editor";
@@ -182,36 +187,27 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "4fr 6fr",
-        height: "100vh",
-        width: "100vw",
+    <div style={
+      {
+        height:"100vh",
+        width:"100vw"
       }}
     >
-      <div style={{ overflow: "auto" }}>
-        <InputSection
-          editorRef={editorRef}
-          runQuery={runQuery}
-          handleFileUpload={handleFileUpload}
-          csvPreview={csvPreview}
-          columnTypes={columnTypes}
-          handleTypeChange={handleTypeChange}
-          createTable={createTable}
-          tableName={tableName}
-          setTableName={setTableName}
-        />
-      </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateRows: "7fr 8fr",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ overflow: "auto" }}>
-          <OutputSection output={output} />
+     
+        <ResizablePanelGroup direction="horizontal" className="h-screen w-screen">
+      <ResizablePanel defaultSize={40} minSize={30}>
+        <div className="h-full overflow-auto">
+          <InputSection
+            editorRef={editorRef}
+            runQuery={runQuery}
+            handleFileUpload={handleFileUpload}
+            csvPreview={csvPreview}
+            columnTypes={columnTypes}
+            handleTypeChange={handleTypeChange}
+            createTable={createTable}
+            tableName={tableName}
+            setTableName={setTableName}
+          />
         </div>
         <div style={{ overflow: "auto" }}>
           <VisualizeSection output={output} />
@@ -219,7 +215,25 @@ function App() {
         <div style={{overflow: "auto"}}>
           <OPFSViewer />
         </div>
-      </div>
+
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={60}>
+        <ResizablePanelGroup direction="vertical">
+          <ResizablePanel defaultSize={50}>
+            <div className="h-full overflow-auto">
+              <OutputSection output={output} />
+            </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={50}>
+            <div className="h-full overflow-auto">
+              <VisualizeSection output={output} />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </ResizablePanel>
+    </ResizablePanelGroup>
     </div>
   );
 }
