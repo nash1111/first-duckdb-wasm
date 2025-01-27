@@ -7,6 +7,7 @@ import OutputSection from "./components/OutputSection";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
 import VisualizeSection from "./components/VisualizeSection";
+import OPFSViewer from "./components/OPFSViewer";
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
@@ -213,6 +214,9 @@ function App() {
         </div>
         <div style={{ overflow: "auto" }}>
           <VisualizeSection output={output} />
+        </div>
+        <div style={{overflow: "auto"}}>
+          <OPFSViewer />
         </div>
       </div>
     </div>
