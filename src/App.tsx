@@ -39,6 +39,7 @@ function App() {
       const logger = new duckdb.ConsoleLogger();
       const dbInstance = new duckdb.AsyncDuckDB(logger, worker);
       await dbInstance.instantiate(bundle.mainModule, bundle.pthreadWorker);
+      // TODO: load opfs file
       URL.revokeObjectURL(worker_url);
       setDb(dbInstance);
     }
