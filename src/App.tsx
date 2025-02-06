@@ -12,11 +12,11 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
 import VisualizeSection from "./components/VisualizeSection";
 import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
-// TODO: use eh
-//import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
-//import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
+//import duckdb_mvp from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
+//import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
+// TODO: switch automatically
+import duckdb_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?worker';
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
 
 export interface Output {
   data?: Record<string, unknown>[];
@@ -37,24 +37,12 @@ function App() {
 
   useEffect(() => {
     async function initializeDuckDB() {
-      const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
-        mvp: {
-            mainModule: duckdb_wasm,
-            mainWorker: mvp_worker,
-        },
-        eh: {
-            mainModule: duckdb_wasm_eh,
-            mainWorker: eh_worker,
-        },
-    };
-    // Select a bundle based on browser checks
-    const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
-    // Instantiate the asynchronus version of DuckDB-wasm
-    const worker = new Worker(bundle.mainWorker!);
-    const logger = new duckdb.ConsoleLogger();
-    const db = new duckdb.AsyncDuckDB(logger, worker);
-    await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-
+      // Select a bundle based on browser checks
+      // Instantiate the asynchronus version of DuckDB-wasm
+      let worker = new duckdb_worker()
+      let logger = new duckdb.ConsoleLogger()
+      let db = new duckdb.AsyncDuckDB(logger, worker)
+      await db.instantiate(duckdb_wasm)
       await db.open({
         path: 'opfs://duckdb-wasm-parquet.db',
         accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
