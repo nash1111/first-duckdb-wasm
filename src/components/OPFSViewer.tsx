@@ -58,10 +58,15 @@ async function deleteEntry(
 }
 
 async function deleteAll(dirHandle: FileSystemDirectoryHandle) {
+  const entries: [string, FileSystemDirectoryHandle | FileSystemFileHandle][] = [];
   for await (const [name, handle] of dirHandle.entries()) {
+    entries.push([name, handle]);
+  }
+  for (const [name, handle] of entries) {
     await dirHandle.removeEntry(name, { recursive: handle.kind === 'directory' });
   }
 }
+
 
 const FileSystemTree: React.FC<{
   entry: FileSystemEntry;
