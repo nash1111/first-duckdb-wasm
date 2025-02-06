@@ -213,7 +213,7 @@ function App() {
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={30}>
+          <ResizablePanel defaultSize={10}>
             <div className="h-full overflow-auto">
               <OPFSViewer />
             </div>
