@@ -4,7 +4,7 @@
     "": {
       "name": "first-duckdb-wasm",
       "dependencies": {
-        "@duckdb/duckdb-wasm": "1.29.0",
+        "@duckdb/duckdb-wasm": "1.29.1-dev24.0",
         "@radix-ui/react-dropdown-menu": "^2.1.5",
         "@radix-ui/react-select": "^2.1.5",
         "@radix-ui/react-slot": "^1.1.1",
@@ -87,7 +87,7 @@
 
     "@babel/types": ["@babel/types@7.26.7", "", { "dependencies": { "@babel/helper-string-parser": "^7.25.9", "@babel/helper-validator-identifier": "^7.25.9" } }, "sha512-t8kDRGrKXyp6+tjUh7hw2RLyclsW4TRoRvRHtSyAX9Bb5ldlFh+90YAYY6awRXrlB4G5G2izNeGySpATlFzmOg=="],
 
-    "@duckdb/duckdb-wasm": ["@duckdb/duckdb-wasm@1.29.0", "", { "dependencies": { "apache-arrow": "^17.0.0" } }, "sha512-8Zq7vafQuIz9gklC/9375KE38UlkaS2n8+yvG+/JK7irm3DjwYNJHL4xfplIj0bSHFIg6we5XhWYFqtE/vO3+Q=="],
+    "@duckdb/duckdb-wasm": ["@duckdb/duckdb-wasm@1.29.1-dev24.0", "", { "dependencies": { "apache-arrow": "^17.0.0" } }, "sha512-J1tYgPIdjK6549O47+9l9HxCuikgVr0Gswq4ukZGebD2tnCXC2EBT3ui/gTWhjjfSFe/ORRmGW2NEnKO0z1ytQ=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.24.2", "", { "os": "aix", "cpu": "ppc64" }, "sha512-thpVCb/rhxE/BnMLQ7GReQLLN8q9qbHmI55F4489/ByVg2aQaQ6kbcLb6FHkocZzQhxc4gx0sCk0tJkKBFzDhA=="],
 
