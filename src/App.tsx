@@ -50,10 +50,11 @@ function App() {
       const db = new duckdb.AsyncDuckDB(logger, worker)
       const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
       await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-      //await db.open({
-      //  path: 'opfs://duckdb-wasm-parquet.db',
-      //  accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
-      //})
+      await db.open({
+        // 名前が残る？？
+        path: 'opfs://duckdb-wasm-parqaaauet.db',
+        accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
+      })
       setDb(db);
     }
 
