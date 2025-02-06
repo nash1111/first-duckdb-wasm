@@ -12,6 +12,7 @@ import OutputSection from "./components/OutputSection";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
 import VisualizeSection from "./components/VisualizeSection";
+import OPFSViewer from "./components/OPFSViewer";
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 export interface Output {
@@ -43,6 +44,7 @@ function App() {
       const logger = new duckdb.ConsoleLogger();
       const dbInstance = new duckdb.AsyncDuckDB(logger, worker);
       await dbInstance.instantiate(bundle.mainModule, bundle.pthreadWorker);
+      // TODO: load opfs file
       URL.revokeObjectURL(worker_url);
       setDb(dbInstance);
     }
@@ -191,21 +193,32 @@ function App() {
         width:"100vw"
       }}
     >
+     
         <ResizablePanelGroup direction="horizontal" className="h-screen w-screen">
       <ResizablePanel defaultSize={40} minSize={30}>
-        <div className="h-full overflow-auto">
-          <InputSection
-            editorRef={editorRef}
-            runQuery={runQuery}
-            handleFileUpload={handleFileUpload}
-            csvPreview={csvPreview}
-            columnTypes={columnTypes}
-            handleTypeChange={handleTypeChange}
-            createTable={createTable}
-            tableName={tableName}
-            setTableName={setTableName}
-          />
-        </div>
+        <ResizablePanelGroup direction="vertical">
+          <ResizablePanel defaultSize={40}>
+            <div className="h-full overflow-auto">
+              <InputSection
+                editorRef={editorRef}
+                runQuery={runQuery}
+                handleFileUpload={handleFileUpload}
+                csvPreview={csvPreview}
+                columnTypes={columnTypes}
+                handleTypeChange={handleTypeChange}
+                createTable={createTable}
+                tableName={tableName}
+                setTableName={setTableName}
+              />
+            </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={10}>
+            <div className="h-full overflow-auto">
+              <OPFSViewer />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={60}>
