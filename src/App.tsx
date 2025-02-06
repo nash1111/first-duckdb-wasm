@@ -4,7 +4,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import * as duckdb from "@duckdb/duckdb-wasm";
+import * as duckdb from '@duckdb/duckdb-wasm';
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
+import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
+import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
+import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
 import Papa from "papaparse";
 import * as monaco from "monaco-editor";
 import InputSection, { ColumnType } from "./components/InputSection";
@@ -13,7 +17,16 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
 import VisualizeSection from "./components/VisualizeSection";
 
-const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
+const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
+  mvp: {
+      mainModule: duckdb_wasm,
+      mainWorker: mvp_worker,
+  },
+  eh: {
+      mainModule: duckdb_wasm_eh,
+      mainWorker: eh_worker,
+  },
+};
 export interface Output {
   data?: Record<string, unknown>[];
   message?: string;
@@ -33,18 +46,17 @@ function App() {
 
   useEffect(() => {
     async function initializeDuckDB() {
-      const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
-      const worker_url = URL.createObjectURL(
-        new Blob([`importScripts("${bundle.mainWorker}");`], {
-          type: "text/javascript",
-        }),
-      );
-      const worker = new Worker(worker_url);
+      const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
+      // Instantiate the asynchronus version of DuckDB-wasm
+      const worker = new Worker(bundle.mainWorker!);
       const logger = new duckdb.ConsoleLogger();
-      const dbInstance = new duckdb.AsyncDuckDB(logger, worker);
-      await dbInstance.instantiate(bundle.mainModule, bundle.pthreadWorker);
-      URL.revokeObjectURL(worker_url);
-      setDb(dbInstance);
+      const db = new duckdb.AsyncDuckDB(logger, worker);
+      await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+      await db.open({
+        path: 'opfs://duckdb-wasm-parquet.db',
+        accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
+      })
+      setDb(db);
     }
 
     initializeDuckDB();
