@@ -187,56 +187,55 @@ function App() {
   };
 
   return (
-    <div style={
-      {
-        height:"100vh",
-        width:"100vw"
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
       }}
     >
-     
-        <ResizablePanelGroup direction="horizontal" className="h-screen w-screen">
-      <ResizablePanel defaultSize={40} minSize={30}>
-        <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={40}>
-            <div className="h-full overflow-auto">
-              <InputSection
-                editorRef={editorRef}
-                runQuery={runQuery}
-                handleFileUpload={handleFileUpload}
-                csvPreview={csvPreview}
-                columnTypes={columnTypes}
-                handleTypeChange={handleTypeChange}
-                createTable={createTable}
-                tableName={tableName}
-                setTableName={setTableName}
-              />
-            </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={10}>
-            <div className="h-full overflow-auto">
-              <OPFSViewer />
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={60}>
-        <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={50}>
-            <div className="h-full overflow-auto">
-              <OutputSection output={output} />
-            </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={50}>
-            <div className="h-full overflow-auto">
-              <VisualizeSection output={output} />
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+      <ResizablePanelGroup direction="horizontal" className="h-screen w-screen">
+        <ResizablePanel defaultSize={40} minSize={30}>
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel defaultSize={40}>
+              <div className="h-full overflow-auto">
+                <InputSection
+                  editorRef={editorRef}
+                  runQuery={runQuery}
+                  handleFileUpload={handleFileUpload}
+                  csvPreview={csvPreview}
+                  columnTypes={columnTypes}
+                  handleTypeChange={handleTypeChange}
+                  createTable={createTable}
+                  tableName={tableName}
+                  setTableName={setTableName}
+                />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={10}>
+              <div className="h-full overflow-auto">
+                <OPFSViewer />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={60}>
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel defaultSize={50}>
+              <div className="h-full overflow-auto">
+                <OutputSection output={output} />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={50}>
+              <div className="h-full overflow-auto">
+                <VisualizeSection output={output} />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

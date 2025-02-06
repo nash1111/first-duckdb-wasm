@@ -1,0 +1,23 @@
+name: Knip
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  knip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup-bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: install dependencies
+        run: bun install
+
+      - name: knip
+        run: bun run knip
