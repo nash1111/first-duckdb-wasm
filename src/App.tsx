@@ -5,10 +5,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
-import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
 import Papa from "papaparse";
 import * as monaco from "monaco-editor";
 import InputSection, { ColumnType } from "./components/InputSection";
@@ -17,16 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "./components/ui/toast";
 import VisualizeSection from "./components/VisualizeSection";
 
-const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
-  mvp: {
-      mainModule: duckdb_wasm,
-      mainWorker: mvp_worker,
-  },
-  eh: {
-      mainModule: duckdb_wasm_eh,
-      mainWorker: eh_worker,
-  },
-};
 export interface Output {
   data?: Record<string, unknown>[];
   message?: string;
@@ -46,16 +32,21 @@ function App() {
 
   useEffect(() => {
     async function initializeDuckDB() {
-      const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
-      // Instantiate the asynchronus version of DuckDB-wasm
-      const worker = new Worker(bundle.mainWorker!);
+      const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
+      const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
+      const worker_url = URL.createObjectURL(
+        new Blob([`importScripts("${bundle.mainWorker}");`], { type: 'text/javascript' })
+      );
+      const worker = new Worker(worker_url);
       const logger = new duckdb.ConsoleLogger();
       const db = new duckdb.AsyncDuckDB(logger, worker);
       await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+
       await db.open({
         path: 'opfs://duckdb-wasm-parquet.db',
         accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
       })
+      URL.revokeObjectURL(worker_url);
       setDb(db);
     }
 
@@ -199,43 +190,43 @@ function App() {
   return (
     <div style={
       {
-        height:"100vh",
-        width:"100vw"
+        height: "100vh",
+        width: "100vw"
       }}
     >
-        <ResizablePanelGroup direction="horizontal" className="h-screen w-screen">
-      <ResizablePanel defaultSize={40} minSize={30}>
-        <div className="h-full overflow-auto">
-          <InputSection
-            editorRef={editorRef}
-            runQuery={runQuery}
-            handleFileUpload={handleFileUpload}
-            csvPreview={csvPreview}
-            columnTypes={columnTypes}
-            handleTypeChange={handleTypeChange}
-            createTable={createTable}
-            tableName={tableName}
-            setTableName={setTableName}
-          />
-        </div>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={60}>
-        <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={50}>
-            <div className="h-full overflow-auto">
-              <OutputSection output={output} />
-            </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={50}>
-            <div className="h-full overflow-auto">
-              <VisualizeSection output={output} />
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+      <ResizablePanelGroup direction="horizontal" className="h-screen w-screen">
+        <ResizablePanel defaultSize={40} minSize={30}>
+          <div className="h-full overflow-auto">
+            <InputSection
+              editorRef={editorRef}
+              runQuery={runQuery}
+              handleFileUpload={handleFileUpload}
+              csvPreview={csvPreview}
+              columnTypes={columnTypes}
+              handleTypeChange={handleTypeChange}
+              createTable={createTable}
+              tableName={tableName}
+              setTableName={setTableName}
+            />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={60}>
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel defaultSize={50}>
+              <div className="h-full overflow-auto">
+                <OutputSection output={output} />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={50}>
+              <div className="h-full overflow-auto">
+                <VisualizeSection output={output} />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
