@@ -1,28 +1,28 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
 type FileSystemEntry = {
   name: string;
-  kind: "directory" | "file";
+  kind: 'directory' | 'file';
   children?: FileSystemEntry[];
 };
 
 async function readDirectory(
   dirHandle: FileSystemDirectoryHandle,
-  currentName = "(root)",
+  currentName = '(root)'
 ): Promise<FileSystemEntry> {
   const entry: FileSystemEntry = {
     name: currentName,
-    kind: "directory",
+    kind: 'directory',
     children: [],
   };
   for await (const [name, handle] of dirHandle.entries()) {
-    if (handle.kind === "directory") {
+    if (handle.kind === 'directory') {
       const subEntry = await readDirectory(handle, name);
       entry.children?.push(subEntry);
-    } else if (handle.kind === "file") {
+    } else if (handle.kind === 'file') {
       entry.children?.push({
         name,
-        kind: "file",
+        kind: 'file',
       });
     }
   }
@@ -31,7 +31,7 @@ async function readDirectory(
 
 async function readFile(
   dirHandle: FileSystemDirectoryHandle,
-  fileName: string,
+  fileName: string
 ): Promise<string> {
   const fileHandle = await dirHandle.getFileHandle(fileName, { create: false });
   const fileData = await fileHandle.getFile();
@@ -41,7 +41,7 @@ async function readFile(
 async function writeFile(
   dirHandle: FileSystemDirectoryHandle,
   fileName: string,
-  content: string,
+  content: string
 ) {
   const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
   const writable = await fileHandle.createWritable();
@@ -52,16 +52,14 @@ async function writeFile(
 async function deleteEntry(
   dirHandle: FileSystemDirectoryHandle,
   entryName: string,
-  isDirectory?: boolean,
+  isDirectory?: boolean
 ) {
   await dirHandle.removeEntry(entryName, { recursive: isDirectory });
 }
 
 async function deleteAll(dirHandle: FileSystemDirectoryHandle) {
   for await (const [name, handle] of dirHandle.entries()) {
-    await dirHandle.removeEntry(name, {
-      recursive: handle.kind === "directory",
-    });
+    await dirHandle.removeEntry(name, { recursive: handle.kind === 'directory' });
   }
 }
 
@@ -73,13 +71,14 @@ const FileSystemTree: React.FC<{
   if (!entry) return null;
 
   return (
-    <ul style={{ listStyle: "none", marginLeft: "1rem" }}>
+    <ul style={{ listStyle: 'none', marginLeft: '1rem' }}>
       <li>
-        {entry.kind === "directory" ? "📁" : "📄"} <strong>{entry.name}</strong>{" "}
-        {entry.name !== "(root)" && (
+        {entry.kind === 'directory' ? '📁' : '📄'}{' '}
+        <strong>{entry.name}</strong>{' '}
+        {entry.name !== '(root)' && (
           <button
-            style={{ marginLeft: "8px", color: "red" }}
-            onClick={() => onDelete(entry.name, entry.kind === "directory")}
+            style={{ marginLeft: '8px', color: 'red' }}
+            onClick={() => onDelete(entry.name, entry.kind === 'directory')}
           >
             Delete
           </button>
@@ -88,9 +87,9 @@ const FileSystemTree: React.FC<{
       {entry.children &&
         entry.children.map((child, idx) => (
           <li key={idx}>
-            {child.kind === "file" ? (
+            {child.kind === 'file' ? (
               <span
-                style={{ cursor: "pointer", color: "blue" }}
+                style={{ cursor: 'pointer', color: 'blue' }}
                 onClick={() => onClickFile(child.name)}
               >
                 📄 {child.name}
@@ -102,9 +101,9 @@ const FileSystemTree: React.FC<{
                 onDelete={onDelete}
               />
             )}
-            {child.kind === "file" && (
+            {child.kind === 'file' && (
               <button
-                style={{ marginLeft: "8px", color: "red" }}
+                style={{ marginLeft: '8px', color: 'red' }}
                 onClick={() => onDelete(child.name, false)}
               >
                 Delete
@@ -117,27 +116,28 @@ const FileSystemTree: React.FC<{
 };
 
 const OPFSViewer: React.FC = () => {
-  const [rootHandle, setRootHandle] =
-    useState<FileSystemDirectoryHandle | null>(null);
+  const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(
+    null
+  );
   const [tree, setTree] = useState<FileSystemEntry | null>(null);
-  const [fileContent, setFileContent] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [newFileName, setNewFileName] = useState("");
-  const [newFileContent, setNewFileContent] = useState("");
+  const [fileContent, setFileContent] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [newFileName, setNewFileName] = useState('');
+  const [newFileContent, setNewFileContent] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const loadOPFS = useCallback(async () => {
     setError(null);
     try {
       const dirHandle = await navigator.storage.getDirectory();
-      await dirHandle.requestPermission({ mode: "readwrite" });
+      await dirHandle.requestPermission({ mode: 'readwrite' });
       setRootHandle(dirHandle);
 
       const treeData = await readDirectory(dirHandle);
       setTree(treeData);
     } catch (err) {
       console.error(err);
-      setError("Error while reading OPFS");
+      setError('Error while reading OPFS');
     }
   }, []);
 
@@ -159,7 +159,7 @@ const OPFSViewer: React.FC = () => {
         setError(`file load error: ${fileName}`);
       }
     },
-    [rootHandle],
+    [rootHandle]
   );
 
   const handleWriteFile = useCallback(async () => {
@@ -167,17 +167,17 @@ const OPFSViewer: React.FC = () => {
     setError(null);
     try {
       if (!newFileName) {
-        setError("insert file name");
+        setError('insert file name');
         return;
       }
       await writeFile(rootHandle, newFileName, newFileContent);
-      setNewFileName("");
-      setNewFileContent("");
+      setNewFileName('');
+      setNewFileContent('');
       await reloadTree();
       alert(`"${newFileName}" created/updated`);
     } catch (err) {
       console.error(err);
-      setError("Error while writing file");
+      setError('Error while writing file');
     }
   }, [rootHandle, newFileName, newFileContent, reloadTree]);
 
@@ -193,18 +193,18 @@ const OPFSViewer: React.FC = () => {
         setError(`deletion error: ${entryName}`);
       }
     },
-    [rootHandle, reloadTree],
+    [rootHandle, reloadTree]
   );
 
   const handleDeleteAll = useCallback(async () => {
     if (!rootHandle) return;
-    if (!window.confirm("DELETE ALL FILES/FOLDERS ON OPFS ?")) return;
+    if (!window.confirm('DELETE ALL FILES/FOLDERS ON OPFS ?')) return;
     try {
       await deleteAll(rootHandle);
       await reloadTree();
     } catch (err) {
       console.error(err);
-      setError("Error while deleting all files");
+      setError('Error while deleting all files');
     }
   }, [rootHandle, reloadTree]);
 
@@ -223,12 +223,12 @@ const OPFSViewer: React.FC = () => {
         alert(`File "${file.name}" was uploaded to OPFS`);
       } catch (err) {
         console.error(err);
-        setError("Error while uploading CSV");
+        setError('Error while uploading CSV');
       } finally {
-        e.target.value = "";
+        e.target.value = '';
       }
     },
-    [rootHandle, reloadTree],
+    [rootHandle, reloadTree]
   );
 
   useEffect(() => {
@@ -236,11 +236,11 @@ const OPFSViewer: React.FC = () => {
   }, [loadOPFS]);
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: '1rem' }}>
       <h1>OPFS Viewer</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <div style={{ margin: "1rem 0" }}>
+      <div style={{ margin: '1rem 0' }}>
         <button onClick={reloadTree}>Reload Tree</button>
         <button style={{ marginLeft: 8 }} onClick={handleDeleteAll}>
           DELETE ALL
@@ -261,10 +261,10 @@ const OPFSViewer: React.FC = () => {
 
       <h2>Read File</h2>
       <p>
-        <strong>Selected File:</strong> {fileName || "(none)"}
+        <strong>Selected File:</strong> {fileName || '(none)'}
       </p>
       <textarea
-        style={{ width: "100%", height: "100px" }}
+        style={{ width: '100%', height: '100px' }}
         readOnly
         value={fileContent}
         placeholder="click to load"
@@ -274,28 +274,24 @@ const OPFSViewer: React.FC = () => {
 
       <h2>Write File</h2>
       <div>
-        <label style={{ display: "block", marginBottom: "4px" }}>
-          File Name
-        </label>
+        <label style={{ display: 'block', marginBottom: '4px' }}>File Name</label>
         <input
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
           value={newFileName}
           onChange={(e) => setNewFileName(e.target.value)}
           placeholder="example.txt"
         />
       </div>
-      <div style={{ marginTop: "8px" }}>
-        <label style={{ display: "block", marginBottom: "4px" }}>
-          File Content
-        </label>
+      <div style={{ marginTop: '8px' }}>
+        <label style={{ display: 'block', marginBottom: '4px' }}>File Content</label>
         <textarea
-          style={{ width: "100%", height: "80px" }}
+          style={{ width: '100%', height: '80px' }}
           value={newFileContent}
           onChange={(e) => setNewFileContent(e.target.value)}
           placeholder="insert text here"
         />
       </div>
-      <div style={{ marginTop: "8px" }}>
+      <div style={{ marginTop: '8px' }}>
         <button onClick={handleWriteFile}>Save File</button>
       </div>
       <hr />
