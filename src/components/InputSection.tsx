@@ -10,15 +10,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface ColumnType {
   name: string;
   type: string;
 }
-const DUCKDB_TYPES = ["INTEGER", "DOUBLE", "BOOLEAN", "TEXT"];
+const DUCKDB_TYPES = [
+  // Numeric Types
+  "TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT",
+  "UTINYINT", "USMALLINT", "UINTEGER", "UBIGINT", "UHUGEINT",
+  "DECIMAL", "FLOAT", "DOUBLE",
+  // String Types
+  "VARCHAR", "TEXT", "CHAR", "BIT",
+  // Boolean Type
+  "BOOLEAN",
+  // Date/Time Types
+  "DATE", "TIME", "TIMESTAMP", "TIMESTAMP WITH TIME ZONE", "INTERVAL",
+  // Binary Types
+  "BLOB", "BYTEA", "BINARY", "VARBINARY",
+  // Other Types
+  "UUID", "JSON",
+  // Nested Types
+  "ARRAY", "LIST", "MAP", "STRUCT", "UNION"
+];
 
 interface InputSectionProps {
-  editorRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>;
+  editorRef: React.RefObject<monaco.editor.IStandaloneCodeEditor | null>;
   runQuery: () => void;
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   csvPreview: Record<string, string | null>[];
@@ -179,17 +203,21 @@ const InputSection: React.FC<InputSectionProps> = ({
                 {Object.keys(csvPreview[0] || {}).map((column, index) => (
                   <TableHead key={index}>
                     {column}
-                    <select
+                    <Select
                       value={columnTypes[index]?.type || "TEXT"}
-                      onChange={(e) => handleTypeChange(index, e.target.value)}
-                      style={{ marginLeft: "10px" }}
+                      onValueChange={(value) => handleTypeChange(index, value)}
                     >
-                      {DUCKDB_TYPES.map((type) => (
-                        <option key={type} value={type}>
-                          {type}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="w-[180px] ml-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DUCKDB_TYPES.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </TableHead>
                 ))}
               </TableRow>
