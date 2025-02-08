@@ -15,10 +15,27 @@ export interface ColumnType {
   name: string;
   type: string;
 }
-const DUCKDB_TYPES = ["INTEGER", "DOUBLE", "BOOLEAN", "TEXT"];
+const DUCKDB_TYPES = [
+  // Numeric Types
+  "TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT",
+  "UTINYINT", "USMALLINT", "UINTEGER", "UBIGINT", "UHUGEINT",
+  "DECIMAL", "FLOAT", "DOUBLE",
+  // String Types
+  "VARCHAR", "TEXT", "CHAR", "BIT",
+  // Boolean Type
+  "BOOLEAN",
+  // Date/Time Types
+  "DATE", "TIME", "TIMESTAMP", "TIMESTAMP WITH TIME ZONE", "INTERVAL",
+  // Binary Types
+  "BLOB", "BYTEA", "BINARY", "VARBINARY",
+  // Other Types
+  "UUID", "JSON",
+  // Nested Types
+  "ARRAY", "LIST", "MAP", "STRUCT", "UNION"
+];
 
 interface InputSectionProps {
-  editorRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>;
+  editorRef: React.RefObject<monaco.editor.IStandaloneCodeEditor | null>;
   runQuery: () => void;
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   csvPreview: Record<string, string | null>[];
