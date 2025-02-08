@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
 import * as monaco from "monaco-editor";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditorProps {
   editorRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>;
@@ -17,8 +25,8 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
     }
   }, [theme, editorRef]);
 
-  const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setTheme(event.target.value);
+  const handleThemeChange = (value: string) => {
+    setTheme(value);
   };
 
   useEffect(() => {
@@ -77,16 +85,19 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
         <button onClick={decreaseFontSize} style={{ marginLeft: "4px" }}>
           ▼
         </button>
-        <select
-          onChange={handleThemeChange}
-          value={theme}
-          style={{ marginLeft: "8px" }}
-        >
-          <option value="vs">vs</option>
-          <option value="vs-dark">vs-dark</option>
-          <option value="hc-black">hc-black</option>
-          <option value="hc-light">hc-light</option>
-        </select>
+        <Select onValueChange={handleThemeChange} value={theme}>
+          <SelectTrigger className="w-[180px] ml-2">
+            <SelectValue placeholder="Select theme" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="vs">VS Light</SelectItem>
+              <SelectItem value="vs-dark">VS Dark</SelectItem>
+              <SelectItem value="hc-black">High Contrast Dark</SelectItem>
+              <SelectItem value="hc-light">High Contrast Light</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
       <div
         id="editor"
