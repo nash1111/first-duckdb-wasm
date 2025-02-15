@@ -9,9 +9,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "./components/ui/button";
+import { Undo2, Redo2, Download } from "lucide-react";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 interface EditorProps {
-  editorRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>;
+  editorRef: React.RefObject<monaco.editor.IStandaloneCodeEditor | null>;
   runQuery: () => void;
 }
 
@@ -19,6 +22,7 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
   const defaultFontSize = 20;
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [theme, setTheme] = useState("vs-dark");
+  const { toast } = useToast();
 
   useEffect(() => {
     if (editorRef.current) {
@@ -85,6 +89,62 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
         </Button>
         <Button onClick={decreaseFontSize} style={{ marginLeft: "4px" }}>
           ▼
+        </Button>
+        <Button
+          onClick={() => {
+            if (editorRef.current) {
+              const content = editorRef.current.getValue();
+              const timestamp = format(new Date(), "yyyy-MM-dd'T'HHmmssSSS");
+              const filename = `${timestamp}.sql`;
+
+              const blob = new Blob([content], { type: "text/plain" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              
+              toast({
+                title: "Downloaded",
+                description: `File saved as ${filename}`,
+              });
+            }
+          }}
+          size="icon"
+          variant="outline"
+          title="Download SQL"
+          className="ml-2"
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={() => {
+            if (editorRef.current) {
+              editorRef.current.trigger("keyboard", "undo", null);
+            }
+          }}
+          size="icon"
+          variant="outline"
+          title="Undo"
+          className="ml-2"
+        >
+          <Undo2 className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={() => {
+            if (editorRef.current) {
+              editorRef.current.trigger("keyboard", "redo", null);
+            }
+          }}
+          size="icon"
+          variant="outline"
+          title="Redo"
+          className="ml-2"
+        >
+          <Redo2 className="h-4 w-4" />
         </Button>
         <Select onValueChange={handleThemeChange} value={theme}>
           <SelectTrigger className="w-[180px] ml-2">
