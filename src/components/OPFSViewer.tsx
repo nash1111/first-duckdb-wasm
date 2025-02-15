@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from './ui/button';
+import { Download, Trash2 } from 'lucide-react';
 
 type FileSystemEntry = {
   name: string;
@@ -43,6 +44,27 @@ async function readFile(
   return fileData.text();
 }
 
+async function downloadFile(
+  dirHandle: FileSystemDirectoryHandle,
+  fileName: string
+) {
+  try {
+    const content = await readFile(dirHandle, fileName);
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    throw error;
+  }
+}
+
 async function writeFile(
   dirHandle: FileSystemDirectoryHandle,
   fileName: string,
@@ -72,12 +94,12 @@ async function deleteAll(dirHandle: FileSystemDirectoryHandle) {
   }
 }
 
-
 const FileSystemTree: React.FC<{
   entry: FileSystemEntry;
   onClickFile: (fileName: string) => void;
   onDelete: (entryName: string, isDir: boolean) => void;
-}> = ({ entry, onClickFile, onDelete }) => {
+  onDownload: (fileName: string) => void;
+}> = ({ entry, onClickFile, onDelete, onDownload }) => {
   if (!entry) return null;
 
   return (
@@ -87,10 +109,13 @@ const FileSystemTree: React.FC<{
         <strong>{entry.name}</strong>{' '}
         {entry.name !== '(root)' && (
           <Button
-            style={{ marginLeft: '8px', color: 'red' }}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-red-500 hover:text-red-700"
             onClick={() => onDelete(entry.name, entry.kind === 'directory')}
+            title="Delete directory"
           >
-            Delete
+            <Trash2 className="h-4 w-4" />
           </Button>
         )}
       </li>
@@ -109,15 +134,30 @@ const FileSystemTree: React.FC<{
                 entry={child}
                 onClickFile={onClickFile}
                 onDelete={onDelete}
+                onDownload={onDownload}
               />
             )}
             {child.kind === 'file' && (
-              <Button
-                style={{ marginLeft: '8px', color: 'red' }}
-                onClick={() => onDelete(child.name, false)}
-              >
-                Delete
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onDownload(child.name)}
+                  title="Download file"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-red-500 hover:text-red-700"
+                  onClick={() => onDelete(child.name, false)}
+                  title="Delete file"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
             )}
           </li>
         ))}
@@ -191,6 +231,19 @@ const OPFSViewer: React.FC = () => {
       setError('Error while writing file');
     }
   }, [rootHandle, newFileName, newFileContent, reloadTree]);
+
+  const handleDownload = useCallback(
+    async (fileName: string) => {
+      if (!rootHandle) return;
+      try {
+        await downloadFile(rootHandle, fileName);
+      } catch (err) {
+        console.error(err);
+        setError(`download error: ${fileName}`);
+      }
+    },
+    [rootHandle]
+  );
 
   const handleDelete = useCallback(
     async (entryName: string, isDir: boolean) => {
@@ -283,6 +336,7 @@ const OPFSViewer: React.FC = () => {
             entry={tree}
             onClickFile={handleClickFile}
             onDelete={handleDelete}
+            onDownload={handleDownload}
           />
         </div>
       )}

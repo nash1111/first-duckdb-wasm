@@ -44,8 +44,10 @@ function App() {
       const logger = new duckdb.ConsoleLogger();
       const dbInstance = new duckdb.AsyncDuckDB(logger, worker);
       await dbInstance.instantiate(bundle.mainModule, bundle.pthreadWorker);
+      const now = new Date();
+      const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
       await dbInstance.open({
-        path: 'opfs://opfs-file-name.db',
+        path: `opfs://${timestamp}.db`,
         accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
       })
       URL.revokeObjectURL(worker_url);
