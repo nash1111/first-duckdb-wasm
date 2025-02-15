@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { CheckSquare, Square } from 'lucide-react';
 
 type FileSystemEntry = {
   name: string;
@@ -8,7 +9,8 @@ type FileSystemEntry = {
 
 async function readDirectory(
   dirHandle: FileSystemDirectoryHandle,
-  currentName = '(root)'
+  currentName = '(root)',
+  hideWalFile = true
 ): Promise<FileSystemEntry> {
   const entry: FileSystemEntry = {
     name: currentName,
@@ -20,10 +22,12 @@ async function readDirectory(
       const subEntry = await readDirectory(handle, name);
       entry.children?.push(subEntry);
     } else if (handle.kind === 'file') {
-      entry.children?.push({
-        name,
-        kind: 'file',
-      });
+      if (!hideWalFile || !name.endsWith('.wal')) {
+        entry.children?.push({
+          name,
+          kind: 'file',
+        });
+      }
     }
   }
   return entry;
@@ -121,6 +125,7 @@ const FileSystemTree: React.FC<{
 };
 
 const OPFSViewer: React.FC = () => {
+  const [hideWalFile, setHideWalFile] = useState(true);
   const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(
     null
   );
@@ -138,7 +143,7 @@ const OPFSViewer: React.FC = () => {
       await dirHandle.requestPermission({ mode: 'readwrite' });
       setRootHandle(dirHandle);
 
-      const treeData = await readDirectory(dirHandle);
+      const treeData = await readDirectory(dirHandle, '(root)', hideWalFile);
       setTree(treeData);
     } catch (err) {
       console.error(err);
@@ -148,9 +153,9 @@ const OPFSViewer: React.FC = () => {
 
   const reloadTree = useCallback(async () => {
     if (!rootHandle) return;
-    const treeData = await readDirectory(rootHandle);
+    const treeData = await readDirectory(rootHandle, '(root)', hideWalFile);
     setTree(treeData);
-  }, [rootHandle]);
+  }, [rootHandle, hideWalFile]);
 
   const handleClickFile = useCallback(
     async (fileName: string) => {
@@ -240,9 +245,34 @@ const OPFSViewer: React.FC = () => {
     loadOPFS();
   }, [loadOPFS]);
 
+  useEffect(() => {
+    reloadTree();
+  }, [hideWalFile, reloadTree]);
+
   return (
     <div style={{ padding: '1rem' }}>
-      <h1>OPFS Viewer</h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h1>OPFS Viewer</h1>
+        <button
+          onClick={() => setHideWalFile(!hideWalFile)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+          }}
+        >
+          {hideWalFile ? (
+            <CheckSquare size={20} />
+          ) : (
+            <Square size={20} />
+          )}
+          <span>Hide WAL Files</span>
+        </button>
+      </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <div style={{ margin: '1rem 0' }}>
