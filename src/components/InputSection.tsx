@@ -175,7 +175,7 @@ const InputSection: React.FC<InputSectionProps> = ({
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <h3>Upload CSV Preview</h3>
-            <button
+            <Button
               onClick={createTable}
               style={{
                 marginTop: "10px",
@@ -188,7 +188,7 @@ const InputSection: React.FC<InputSectionProps> = ({
               }}
             >
               Confirm table name, column types and Create Table
-            </button>
+            </Button>
           </div>
           <input
             type="text"

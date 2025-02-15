@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "./components/ui/button";
 
 interface EditorProps {
   editorRef: React.MutableRefObject<monaco.editor.IStandaloneCodeEditor | null>;
@@ -79,12 +80,12 @@ const Editor: React.FC<EditorProps> = ({ editorRef, runQuery }) => {
         style={{ display: "flex", alignItems: "center", marginBottom: "0px" }}
       >
         <span>Font Size: {fontSize}</span>
-        <button onClick={increaseFontSize} style={{ marginLeft: "8px" }}>
+        <Button onClick={increaseFontSize} style={{ marginLeft: "8px" }}>
           ▲
-        </button>
-        <button onClick={decreaseFontSize} style={{ marginLeft: "4px" }}>
+        </Button>
+        <Button onClick={decreaseFontSize} style={{ marginLeft: "4px" }}>
           ▼
-        </button>
+        </Button>
         <Select onValueChange={handleThemeChange} value={theme}>
           <SelectTrigger className="w-[180px] ml-2">
             <SelectValue placeholder="Select theme" />

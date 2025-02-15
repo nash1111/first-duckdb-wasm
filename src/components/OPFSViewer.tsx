@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CheckSquare, Square } from 'lucide-react';
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from './ui/button';
 
 type FileSystemEntry = {
   name: string;
@@ -85,12 +86,12 @@ const FileSystemTree: React.FC<{
         {entry.kind === 'directory' ? '📁' : '📄'}{' '}
         <strong>{entry.name}</strong>{' '}
         {entry.name !== '(root)' && (
-          <button
+          <Button
             style={{ marginLeft: '8px', color: 'red' }}
             onClick={() => onDelete(entry.name, entry.kind === 'directory')}
           >
             Delete
-          </button>
+          </Button>
         )}
       </li>
       {entry.children &&
@@ -111,12 +112,12 @@ const FileSystemTree: React.FC<{
               />
             )}
             {child.kind === 'file' && (
-              <button
+              <Button
                 style={{ marginLeft: '8px', color: 'red' }}
                 onClick={() => onDelete(child.name, false)}
               >
                 Delete
-              </button>
+              </Button>
             )}
           </li>
         ))}
@@ -251,35 +252,29 @@ const OPFSViewer: React.FC = () => {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="flex items-center gap-4">
         <h1>OPFS Viewer</h1>
-        <button
-          onClick={() => setHideWalFile(!hideWalFile)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-          }}
-        >
-          {hideWalFile ? (
-            <CheckSquare size={20} />
-          ) : (
-            <Square size={20} />
-          )}
-          <span>Hide WAL Files</span>
-        </button>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="hide-wal"
+            checked={hideWalFile}
+            onCheckedChange={(checked) => setHideWalFile(checked === true)}
+          />
+          <label
+            htmlFor="hide-wal"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Hide WAL Files
+          </label>
+        </div>
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <div style={{ margin: '1rem 0' }}>
-        <button onClick={reloadTree}>Reload Tree</button>
-        <button style={{ marginLeft: 8 }} onClick={handleDeleteAll}>
+        <Button onClick={reloadTree}>Reload Tree</Button>
+        <Button style={{ marginLeft: 8 }} onClick={handleDeleteAll}>
           DELETE ALL
-        </button>
+        </Button>
       </div>
 
       {tree && (
@@ -327,7 +322,7 @@ const OPFSViewer: React.FC = () => {
         />
       </div>
       <div style={{ marginTop: '8px' }}>
-        <button onClick={handleWriteFile}>Save File</button>
+        <Button onClick={handleWriteFile}>Save File</Button>
       </div>
       <hr />
       <h2>Upload CSV</h2>
